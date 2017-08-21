@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:bind="http://dellkan.com/elibinding"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	tools:context="com.dellkan.elibinding.sample.MainActivity"
+	tools:ignore="MissingPrefix">
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="test"
+		bind:text="{test}" />
+	<Button
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		bind:onClick="update()"
+		bind:text="{buttonText}" />
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="test Link"
+		bind:text="{firstLink.secondLink.testString}" />
+	<Button
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		bind:onClick="firstLink.secondLink.testMethod()"
+		bind:text="{firstLink.secondLink.testString}" />
+</LinearLayout>
