@@ -26,6 +26,8 @@ Todo:
  - [x] Basic one-way binding (model->view)
  - [x] Basic event binding (view.onClick->model)
  - [ ] Basic multi-binding on single view (grouped binding)
+ - [ ] Add bindings for common attributes
+ - [ ] Add support for ListView/Recycler bindings
  - [x] Basic two-way binging (view->model)
  
 Similar libraries
