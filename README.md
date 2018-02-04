@@ -25,12 +25,12 @@ Todo:
 ========
  - [x] Basic one-way binding (model->view)
  - [x] Basic event binding (view.onClick->model)
+ - [x] Basic two-way binging (view->model)
  - [ ] Basic multi-binding on single view (grouped binding)
  - [ ] Add bindings for common attributes
  - [ ] Add support for ListView/Recycler bindings
- - [x] Basic two-way binging (view->model)
  
 Similar libraries
 ========
- - https://github.com/RoboBinding/RoboBinding (ELIBinding is based upon Robobinding - 
- but Robobinding is currently much more stable and battle-tested)
+ - https://github.com/RoboBinding/RoboBinding (ELIBinding is inspired by Robobinding - 
+ Robobinding is currently much more stable, feature-rich and battle-tested)
