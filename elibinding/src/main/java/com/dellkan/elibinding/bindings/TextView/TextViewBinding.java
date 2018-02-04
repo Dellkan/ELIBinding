@@ -12,6 +12,8 @@ public class TextViewBinding extends ELISingleBinding<TextView, String> {
 
     @Override
     public void applyToView(ViewContext<TextView> viewContext, String value) {
-        viewContext.getView().setText(value);
+        if (!viewContext.getView().getText().toString().equals(value)) {
+            viewContext.getView().setText(value);
+        }
     }
 }

@@ -21,7 +21,7 @@ public class ModelEventParser extends ModelLinkedValueParser implements ValuePar
 	}
 
 	@Override
-	public ModelLinkedValueParser.LinkedMember getValue(PresentationModel model, String value) throws ReflectiveOperationException {
+	public ModelLinkedValueParser.LinkedMember getValue(PresentationModel model, String value) {
 		return getLinkedValue(model, stripFormattingSymbols(value));
 	}
 }

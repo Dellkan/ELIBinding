@@ -9,14 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dellkan.elibinding.bindings.EditText.EditTextBinding;
 import com.dellkan.elibinding.bindings.TextView.TextViewBinding;
-import com.dellkan.elibinding.bindings.View.ViewBinding;
+import com.dellkan.elibinding.bindings.View.OnClickEventBinding;
 import com.dellkan.elibinding.modelparsers.ModelScanner;
 import com.dellkan.enhanced_layout_inflater.ELI;
 import com.dellkan.enhanced_layout_inflater.ELIConfig;
 import com.dellkan.enhanced_layout_inflater.ELIContext;
 
-import java.util.InvalidPropertiesFormatException;
 import java.util.MissingFormatArgumentException;
 
 public class ELIBindingInflater {
@@ -29,7 +29,8 @@ public class ELIBindingInflater {
 		} else {
 			mInflater = new ELI(layoutInflater, context, false, new ELIConfig.Builder()
 					.addHook(new TextViewBinding())
-					.addHook(new ViewBinding())
+					.addHook(new OnClickEventBinding())
+					.addHook(new EditTextBinding())
 					.build()
 			);
 		}

@@ -3,13 +3,17 @@ package com.dellkan.elibinding.binders;
 import android.view.View;
 
 import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.modelparsers.ModelConcreteAttribute;
+import com.dellkan.elibinding.modelparsers.ModelScanner;
 import com.dellkan.elibinding.util.ValueInterpreter;
 
 public abstract class ELISingleBinding<ViewType extends View, ValueType> extends ELIBinding<ViewType> {
     private String attributeName;
+    private String qualifiedAttributeName;
     public ELISingleBinding(Class<ViewType> clz, String attributeName) {
         super(clz);
         this.attributeName = attributeName;
+        this.qualifiedAttributeName = String.format("%s:%s", getNamespace(), attributeName);
     }
 
     @Override
@@ -21,7 +25,7 @@ public abstract class ELISingleBinding<ViewType extends View, ValueType> extends
 
         // Otherwise, check if ours is affected
         for (String attribute : changedAttributes) {
-            if (attribute.equals(String.format("%s:%s", getNamespace(), attributeName))) {
+            if (attribute.equals(qualifiedAttributeName)) {
                 return true;
             }
         }
@@ -42,6 +46,16 @@ public abstract class ELISingleBinding<ViewType extends View, ValueType> extends
     public void setupView(ViewContext<ViewType> viewContext, ValueType value) {
         //noinspection unchecked
         this.applyToView(viewContext, value);
+
+        // Also apply ViewToModelBinding if appropriate
+        String viewAttributeValue = viewContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue();
+        if (this instanceof ViewToModelBinding && viewAttributeValue.startsWith("${")) {
+            //noinspection unchecked
+            ((ViewToModelBinding) this).applyToModel(viewContext, new ModelConcreteAttribute(
+                    viewContext.getModelAttribute(viewContext.getViewAttributes().getValue(getNamespace(), attributeName, null)),
+                    viewContext.getModel()
+            ));
+        }
     }
 
     @Override

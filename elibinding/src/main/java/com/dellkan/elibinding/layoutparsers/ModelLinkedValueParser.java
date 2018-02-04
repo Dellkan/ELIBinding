@@ -14,7 +14,7 @@ public abstract class ModelLinkedValueParser implements ValueParser {
 
     public abstract String stripFormattingSymbols(String value);
 
-    public LinkedMember getLinkedValue(Object model, String value) throws InvocationTargetException, IllegalAccessException {
+    public LinkedMember getLinkedValue(Object model, String value) {
         String[] parts = value.split("\\.", 2);
 
         ModelScanner.ModelScan scan = ModelScanner.getScan(model.getClass());
@@ -24,9 +24,13 @@ public abstract class ModelLinkedValueParser implements ValueParser {
                 throw new RuntimeException(String.format("Linked model not found!: %s.%s", model.getClass().toString(), parts[0]));
             }
             // First get our most immediate link
-            Object resolvedModel = scan.getAttribute(parts[0]).getValue(model);
-
-            return getLinkedValue(resolvedModel, parts[1]);
+            try {
+                return getLinkedValue(scan.getAttribute(parts[0]).getValue(model), parts[1]);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             if (scan.hasAttribute(parts[0])) {
                 return new LinkedMember(model, scan.getAttribute(parts[0]));
@@ -55,12 +59,24 @@ public abstract class ModelLinkedValueParser implements ValueParser {
             return member;
         }
 
-        public Object getValue() throws InvocationTargetException, IllegalAccessException {
-            return ((ModelAttribute)member).getValue(model);
+        public Object getValue() {
+            try {
+                return ((ModelAttribute)member).getValue(model);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        public void invoke(Object... params) throws InvocationTargetException, IllegalAccessException {
-            ((ModelCallback)member).invoke(model, params);
+        public void invoke(Object... params) {
+            try {
+                ((ModelCallback)member).invoke(model, params);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

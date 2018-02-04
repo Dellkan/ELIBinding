@@ -6,26 +6,43 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
+	android:padding="20dp"
 	tools:context="com.dellkan.elibinding.sample.MainActivity"
 	tools:ignore="MissingPrefix">
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="test"
+		tools:text="test"
 		bind:text="{test}" />
 	<Button
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		bind:onClick="update()"
+		tools:text="buttonText"
 		bind:text="{buttonText}" />
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="test Link"
+		tools:text="test Link"
 		bind:text="{firstLink.secondLink.testString}" />
 	<Button
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		bind:onClick="firstLink.secondLink.testMethod()"
+		tools:text="linked text"
 		bind:text="{firstLink.secondLink.testString}" />
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="text"
+			android:hint="EditText"
+			bind:text="${twoWayBinding}" />
+	</android.support.design.widget.TextInputLayout>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		bind:text="{twoWayBinding}" />
 </LinearLayout>

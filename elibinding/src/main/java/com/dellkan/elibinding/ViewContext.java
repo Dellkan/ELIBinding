@@ -7,6 +7,7 @@ import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
 import com.dellkan.elibinding.layoutparsers.ModelValueParser;
 import com.dellkan.elibinding.layoutparsers.ValueParser;
 import com.dellkan.elibinding.modelparsers.ModelAttribute;
+import com.dellkan.elibinding.modelparsers.ModelScanner;
 import com.dellkan.elibinding.util.ValueInterpreter;
 import com.dellkan.enhanced_layout_inflater.ELIContext;
 import com.dellkan.enhanced_layout_inflater.ViewAttribute;
@@ -33,7 +34,7 @@ public class ViewContext<ViewType extends View> {
     private ViewAttributes viewAttributes;
     private PresentationModel model;
     private ELIBinding<ViewType> binding;
-    private Map<ViewAttribute, String> attributeMapping = new HashMap<>();
+    private Map<ViewAttribute, ModelAttribute> attributeMapping = new HashMap<>();
 
     public ViewContext(ELIContext eliContext, View parent, ViewType view, ViewAttributes viewAttributes, PresentationModel model, ELIBinding<ViewType> binding) {
         this.eliContext = eliContext;
@@ -66,6 +67,19 @@ public class ViewContext<ViewType extends View> {
         return model;
     }
 
+    public ViewAttribute getViewAttribute(ModelAttribute modelAttribute) {
+        for (Map.Entry<ViewAttribute, ModelAttribute> entry : attributeMapping.entrySet()) {
+            if (entry.getValue().equals(modelAttribute)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public ModelAttribute getModelAttribute(ViewAttribute viewAttribute) {
+        return attributeMapping.get(viewAttribute);
+    }
+
     private void bindView() {
         // We'll need a map of what modelAttribute maps to which viewAttribute
         Set<Object> models = new HashSet<>();
@@ -74,25 +88,11 @@ public class ViewContext<ViewType extends View> {
         for (ViewAttribute attribute : viewAttributes.getValues(binding.getNamespace(), null, null)) {
             if (valueParser.accept(model, attribute.getRawValue())) {
                 String value = valueParser.stripFormattingSymbols(attribute.getRawValue());
+                ModelLinkedValueParser.LinkedMember linkedValue = valueParser.getLinkedValue(model, value);
                 if (valueParser.hasLinks(model, value)) {
-                    try {
-                        ModelLinkedValueParser.LinkedMember linkedValue = valueParser.getLinkedValue(model, value);
-                        models.add(linkedValue.getModel());
-                        attributeMapping.put(
-                                attribute,
-                                String.format("%s:%s",
-                                        linkedValue.getModel().getClass(),
-                                        ((ModelAttribute)linkedValue.getMember()).getName()
-                                )
-                        );
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    attributeMapping.put(attribute, model.getClass() + ":" + value);
+                    models.add(linkedValue.getModel());
                 }
+                attributeMapping.put(attribute, ((ModelAttribute)linkedValue.getMember()));
             }
         }
 
@@ -104,10 +104,11 @@ public class ViewContext<ViewType extends View> {
                 ModelChangeHandler.registerListener(subModel, new ModelChangeHandler.Listener() {
                     @Override
                     public void onChange(Object model, String... refreshedAttributes) {
+                        ModelScanner.ModelScan modelScan = ModelScanner.getScan(model.getClass());
                         List<String> attributeNames = new ArrayList<>();
                         for (String attributeName : refreshedAttributes) {
-                            for (Map.Entry<ViewAttribute, String> entry : attributeMapping.entrySet()) {
-                                if (entry.getValue().equals(model.getClass() + ":" + attributeName)) {
+                            for (Map.Entry<ViewAttribute, ModelAttribute> entry : attributeMapping.entrySet()) {
+                                if (entry.getValue().equals(modelScan.getAttribute(attributeName))) {
                                     attributeNames.add(String.format("%s:%s", entry.getKey().getNamespace(), entry.getKey().getAttributeName()));
                                 }
                             }

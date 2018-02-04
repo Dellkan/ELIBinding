@@ -13,13 +13,14 @@ public class ModelValueParser extends ModelLinkedValueParser implements ValuePar
 
 	@Override
 	public String stripFormattingSymbols(String value) {
+		value = (value.startsWith("${") ? value.substring(2) : value);
 		value = (value.startsWith("{") ? value.substring(1) : value);
 		value = (value.endsWith("}") ? value.substring(0, value.length() - 1) : value);
 		return value;
 	}
 
 	@Override
-	public Object getValue(PresentationModel model, String value) throws ReflectiveOperationException {
+	public Object getValue(PresentationModel model, String value) {
 	    return getLinkedValue(model, stripFormattingSymbols(value)).getValue();
 	}
 }

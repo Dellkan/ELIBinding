@@ -10,8 +10,8 @@ import com.dellkan.elibinding.modelparsers.ModelCallback;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ViewBinding extends ELIEventBinding<View> {
-    public ViewBinding() {
+public class OnClickEventBinding extends ELIEventBinding<View> {
+    public OnClickEventBinding() {
         super(View.class, "onClick");
     }
 
@@ -20,13 +20,7 @@ public class ViewBinding extends ELIEventBinding<View> {
         viewContext.getView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    value.invoke();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                value.invoke();
             }
         });
     }

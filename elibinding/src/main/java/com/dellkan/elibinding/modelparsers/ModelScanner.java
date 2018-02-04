@@ -56,10 +56,10 @@ public class ModelScanner {
 
         public ModelScan(Class<?> model) {
             // Run through the fields (attributes)
-            for (Field field : model.getFields()) {
+            for (Field field : model.getDeclaredFields()) {
                 // Skip attributes belonging to Object
                 if (field.getDeclaringClass().equals(Object.class)) { continue; }
-                attributeAccessors.put(field.getName(), new ModelAttribute(field));
+                attributeAccessors.put(field.getName(), new ModelAttribute(model, field));
             }
 
             // Run through methods (attributes accessors & callbacks)
@@ -72,7 +72,7 @@ public class ModelScanner {
                     String attributeName = getAttributeName(rawAttributeName);
                     ModelAttribute attribute = attributeAccessors.get(attributeName);
                     if (attribute == null) {
-                        attribute = new ModelAttribute(attributeName);
+                        attribute = new ModelAttribute(model, attributeName);
                         attributeAccessors.put(attributeName, attribute);
                     }
 
@@ -82,6 +82,10 @@ public class ModelScanner {
                 }
             }
 
+            /*
+                Optimize step... If some of the linked attributes points to other presentation
+                types then assume we should scan those as well
+             */
             for (ModelAttribute attribute : getAttributes()) {
                 if (PresentationModel.class.isAssignableFrom(attribute.getType())) {
                     getScan(attribute.getType());

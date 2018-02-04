@@ -64,7 +64,7 @@ public class ValueInterpreter {
             try {
                 return parser.getValue(model, attributeValue);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         return null;
