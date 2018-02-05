@@ -1,6 +1,7 @@
 package com.dellkan.elibinding.util;
 
 import com.dellkan.elibinding.PresentationModel;
+import com.dellkan.elibinding.layoutparsers.ReferenceParser;
 import com.dellkan.elibinding.layoutparsers.ValueParser;
 import com.dellkan.elibinding.layoutparsers.EnumParser;
 import com.dellkan.elibinding.layoutparsers.ModelEventParser;
@@ -21,6 +22,7 @@ public class ValueInterpreter {
             new EnumParser(),
             new ModelValueParser(),
             new ModelEventParser(),
+            new ReferenceParser(),
             new RawStringParser()
     );
 

@@ -71,5 +71,5 @@ public abstract class ELIBinding<ViewType extends View> extends ViewHook<ViewTyp
      * @see #shouldTrigger(ViewContext, String...)
      * @see #listenForModelChanges()
      */
-	public abstract void applyToView(ViewContext<ViewType> viewContext);
+	public abstract void applyToView(ViewContext<ViewType> viewContext, String... changedAttributes);
 }

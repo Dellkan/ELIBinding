@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dellkan.elibinding.bindings.AdapterView.AdapterViewBinding;
+import com.dellkan.elibinding.bindings.CompoundButton.CompoundButtonBinding;
 import com.dellkan.elibinding.bindings.EditText.EditTextBinding;
 import com.dellkan.elibinding.bindings.TextView.TextViewBinding;
 import com.dellkan.elibinding.bindings.View.OnClickEventBinding;
@@ -31,6 +33,8 @@ public class ELIBindingInflater {
 					.addHook(new TextViewBinding())
 					.addHook(new OnClickEventBinding())
 					.addHook(new EditTextBinding())
+					.addHook(new AdapterViewBinding())
+					.addHook(new CompoundButtonBinding())
 					.build()
 			);
 		}

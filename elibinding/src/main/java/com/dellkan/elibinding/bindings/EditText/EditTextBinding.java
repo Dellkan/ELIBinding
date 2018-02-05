@@ -7,7 +7,7 @@ import android.widget.EditText;
 import com.dellkan.elibinding.ViewContext;
 import com.dellkan.elibinding.binders.ELISingleBinding;
 import com.dellkan.elibinding.binders.ViewToModelBinding;
-import com.dellkan.elibinding.modelparsers.ModelConcreteAttribute;
+import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
 
 public class EditTextBinding extends ELISingleBinding<EditText, CharSequence> implements ViewToModelBinding<EditText, CharSequence> {
     public EditTextBinding() {
@@ -20,7 +20,7 @@ public class EditTextBinding extends ELISingleBinding<EditText, CharSequence> im
     }
 
     @Override
-    public void applyToModel(ViewContext<EditText> viewContext, final ModelConcreteAttribute<CharSequence> attribute) {
+    public void applyToModel(ViewContext<EditText> viewContext, final ModelLinkedValueParser.LinkedMember<CharSequence> attribute) {
         viewContext.getView().addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence value, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence value, int start, int before, int count) {

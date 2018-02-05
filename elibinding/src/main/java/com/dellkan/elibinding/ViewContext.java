@@ -3,6 +3,7 @@ package com.dellkan.elibinding;
 import android.view.View;
 
 import com.dellkan.elibinding.binders.ELIBinding;
+import com.dellkan.elibinding.layoutparsers.ModelEventParser;
 import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
 import com.dellkan.elibinding.layoutparsers.ModelValueParser;
 import com.dellkan.elibinding.layoutparsers.ValueParser;
@@ -13,7 +14,6 @@ import com.dellkan.enhanced_layout_inflater.ELIContext;
 import com.dellkan.enhanced_layout_inflater.ViewAttribute;
 import com.dellkan.enhanced_layout_inflater.ViewAttributes;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * All of the parameters to the {@link ELIBinding#applyToView(ViewContext)} were getting a bit of
+ * All of the parameters to the {@link ELIBinding#applyToView(ViewContext, String...)} were getting a bit of
  * a handful. This class here is nothing more than a glorified shortcut so we can provide the binding
  * with all of the cool data we have without having 20+ parameters
  * @param <ViewType>
@@ -76,8 +76,35 @@ public class ViewContext<ViewType extends View> {
         return null;
     }
 
-    public ModelAttribute getModelAttribute(ViewAttribute viewAttribute) {
-        return attributeMapping.get(viewAttribute);
+    public ViewAttribute getViewAttribute(String namespace, String viewAttributeName) {
+        return viewAttributes.getValue(namespace, viewAttributeName);
+    }
+
+    public ModelLinkedValueParser.LinkedMember getModelAttribute(ViewAttribute viewAttribute) {
+        ValueParser valueParser = ValueInterpreter.findSuitableParser(getModel(), viewAttribute.getRawValue());
+
+        if (valueParser != null) {
+            if (valueParser instanceof ModelLinkedValueParser) {
+                return ((ModelLinkedValueParser) valueParser).getLinkedValue(
+                        getModel(),
+                        ((ModelLinkedValueParser) valueParser).stripFormattingSymbols(
+                                viewAttribute.getRawValue()
+                        )
+                );
+            }
+        }
+
+        return null;
+    }
+
+    public ModelLinkedValueParser.LinkedMember getModelAttribute(String namespace, String viewAttributeName) {
+        ViewAttribute viewAttribute = getViewAttribute(namespace, viewAttributeName);
+
+        return getModelAttribute(viewAttribute);
+    }
+
+    public boolean isTwoWayBinding(String namespace, String viewAttributeName) {
+        return getViewAttribute(namespace, viewAttributeName).getRawValue().startsWith("${");
     }
 
     private void bindView() {
@@ -114,7 +141,7 @@ public class ViewContext<ViewType extends View> {
                             }
                         }
                         if ((refreshedAttributes.length == 0 || attributeNames.size() > 0) && binding.shouldTrigger(ViewContext.this, attributeNames.toArray(new String[]{}))) {
-                            binding.applyToView(ViewContext.this);
+                            binding.applyToView(ViewContext.this, attributeNames.toArray(new String[]{}));
                         }
                     }
                 });

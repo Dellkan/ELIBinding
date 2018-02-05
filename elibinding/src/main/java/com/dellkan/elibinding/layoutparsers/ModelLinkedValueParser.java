@@ -42,7 +42,7 @@ public abstract class ModelLinkedValueParser implements ValueParser {
         }
     }
 
-    public static class LinkedMember {
+    public static class LinkedMember<ValueType> {
         Object model;
         ModelMember member;
 
@@ -59,9 +59,20 @@ public abstract class ModelLinkedValueParser implements ValueParser {
             return member;
         }
 
-        public Object getValue() {
+        public ValueType getValue() {
             try {
-                return ((ModelAttribute)member).getValue(model);
+                //noinspection unchecked
+                return (ValueType) ((ModelAttribute)member).getValue(model);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public void setValue(ValueType value) {
+            try {
+                ((ModelAttribute)member).setValue(model, value);
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             } catch (IllegalAccessException e) {
