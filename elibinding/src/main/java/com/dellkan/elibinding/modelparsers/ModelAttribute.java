@@ -3,6 +3,7 @@ package com.dellkan.elibinding.modelparsers;
 import android.support.annotation.NonNull;
 
 import com.dellkan.elibinding.PresentationModel;
+import com.dellkan.elibinding.util.TypeUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +34,10 @@ public class ModelAttribute extends ModelMember {
         boolean isSetter = method.getName().startsWith("set");
         if (isSetter) {
             // There might be multiple setters, converting between values.
-            setters.put(method.getParameterTypes()[0], method);
+            setters.put(
+                    TypeUtils.convertPrimitiveClass(method.getParameterTypes()[0]),
+                    method
+            );
         } else {
             if (getter != null) {
                 throw new RuntimeException("Can't have multiple getters for same property");

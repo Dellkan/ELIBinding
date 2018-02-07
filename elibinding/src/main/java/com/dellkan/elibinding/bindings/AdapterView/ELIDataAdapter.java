@@ -9,7 +9,8 @@ import android.widget.BaseAdapter;
 
 import com.dellkan.elibinding.ELIBindingInflater;
 import com.dellkan.elibinding.PresentationModel;
-import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.BindingContext;
+import com.dellkan.elibinding.ViewBindings;
 import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
 
 import java.util.List;
@@ -18,12 +19,12 @@ import java.util.List;
  * Generic purpose ListView type data-adapter, suitable for generic-purpose databinding-listviews
  */
 public class ELIDataAdapter extends BaseAdapter {
-    private ViewContext<AdapterView> viewContext;
+    private BindingContext<AdapterView> bindingContext;
     private ModelLinkedValueParser.LinkedMember<List<PresentationModel>> itemSource;
     private @LayoutRes int layoutRes;
 
-    public ELIDataAdapter(ViewContext<AdapterView> viewContext, ModelLinkedValueParser.LinkedMember<List<PresentationModel>> itemSource, int layoutRes) {
-        this.viewContext = viewContext;
+    public ELIDataAdapter(BindingContext<AdapterView> bindingContext, ModelLinkedValueParser.LinkedMember<List<PresentationModel>> itemSource, int layoutRes) {
+        this.bindingContext = bindingContext;
         this.itemSource = itemSource;
         this.layoutRes = layoutRes;
     }
@@ -46,8 +47,8 @@ public class ELIDataAdapter extends BaseAdapter {
     /**
      * Get or create the view, while also attaching the correct model
      *
-     * FIXME: Currently broken - does not refresh the bound model (which will change as you scroll
-     * due to reused views)
+     * FIXME: Currently broken - does not refresh the bound model
+     * (which will change as you scroll due to reused views)
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -56,6 +57,7 @@ public class ELIDataAdapter extends BaseAdapter {
 
         if (view != null) {
             // Refresh the view with the new model somehow
+            ViewBindings.rebindWithNewModel(view, getItem(position));
         } else {
             view = new ELIBindingInflater(context).inflate(getItem(position), layoutRes, null);
         }

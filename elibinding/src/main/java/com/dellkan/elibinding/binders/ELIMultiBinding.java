@@ -2,7 +2,7 @@ package com.dellkan.elibinding.binders;
 
 import android.view.View;
 
-import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.BindingContext;
 import com.dellkan.enhanced_layout_inflater.ViewAttribute;
 
 import java.util.ArrayList;
@@ -18,11 +18,11 @@ public abstract class ELIMultiBinding<ViewType extends View> extends ELIBinding<
     }
 
     @Override
-    public boolean shouldTrigger(ViewContext viewContext, String... changedAttributes) {
+    public boolean shouldTrigger(BindingContext bindingContext, String... changedAttributes) {
         // If the view isn't bound towards us at all, then forget about it
         boolean hasRelevantAttribute = false;
         for (ViewAttribute viewAttribute : viewAttributes) {
-            if (viewContext.getViewAttributes().contains(getNamespace(), viewAttribute.getAttributeName(), null)) {
+            if (bindingContext.getViewAttributes().contains(getNamespace(), viewAttribute.getAttributeName(), null)) {
                 hasRelevantAttribute = true;
                 break;
             }
@@ -44,9 +44,9 @@ public abstract class ELIMultiBinding<ViewType extends View> extends ELIBinding<
     }
 
     @Override
-    public void setupView(ViewContext<ViewType> viewContext) {
-        if (shouldTrigger(viewContext)) {
-            applyToView(viewContext);
+    public void setupView(BindingContext<ViewType> bindingContext) {
+        if (shouldTrigger(bindingContext)) {
+            applyToView(bindingContext);
         }
     }
 }

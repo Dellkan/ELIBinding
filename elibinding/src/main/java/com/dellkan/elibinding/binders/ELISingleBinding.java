@@ -2,7 +2,7 @@ package com.dellkan.elibinding.binders;
 
 import android.view.View;
 
-import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.BindingContext;
 import com.dellkan.elibinding.util.ValueInterpreter;
 
 public abstract class ELISingleBinding<ViewType extends View, ValueType> extends ELIBinding<ViewType> {
@@ -15,9 +15,9 @@ public abstract class ELISingleBinding<ViewType extends View, ValueType> extends
     }
 
     @Override
-    public boolean shouldTrigger(ViewContext viewContext, String... changedAttributes) {
+    public boolean shouldTrigger(BindingContext bindingContext, String... changedAttributes) {
         // If the view isn't bound towards us at all, then forget about it
-        if (!viewContext.getViewAttributes().contains(getNamespace(), attributeName, null)) { return false; }
+        if (!bindingContext.getViewAttributes().contains(getNamespace(), attributeName, null)) { return false; }
         // Empty changedAttributes means refresh all
         if (changedAttributes.length == 0) { return true; }
 
@@ -31,42 +31,42 @@ public abstract class ELISingleBinding<ViewType extends View, ValueType> extends
     }
 
     @Override
-    public final void setupView(ViewContext<ViewType> viewContext) {
-        if (shouldTrigger(viewContext)) {
+    public final void setupView(BindingContext<ViewType> bindingContext) {
+        if (shouldTrigger(bindingContext)) {
             //noinspection unchecked
-            setupView(viewContext, (ValueType) ValueInterpreter.getValue(
-                    viewContext.getModel(),
-                    viewContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue()
+            setupView(bindingContext, (ValueType) ValueInterpreter.getValue(
+                    bindingContext.getModel(),
+                    bindingContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue()
             ));
         }
     }
 
-    public void setupView(ViewContext<ViewType> viewContext, ValueType value) {
+    public void setupView(BindingContext<ViewType> bindingContext, ValueType value) {
         //noinspection unchecked
-        this.applyToView(viewContext, value);
+        this.applyToView(bindingContext, value);
 
         // Also apply ViewToModelBinding if appropriate
-        String viewAttributeValue = viewContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue();
-        if (this instanceof ViewToModelBinding && viewContext.isTwoWayBinding(getNamespace(), attributeName)) {
+        String viewAttributeValue = bindingContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue();
+        if (this instanceof ViewToModelBinding && bindingContext.isTwoWayBinding(getNamespace(), attributeName)) {
             //noinspection unchecked
             ((ViewToModelBinding) this).applyToModel(
-                    viewContext,
-                    viewContext.getModelAttribute(getNamespace(), attributeName)
+                    bindingContext,
+                    bindingContext.getModelAttribute(getNamespace(), attributeName)
             );
         }
     }
 
     @Override
-    public final void applyToView(ViewContext<ViewType> viewContext, String... changedAttributes) {
+    public final void applyToView(BindingContext<ViewType> bindingContext, String... changedAttributes) {
         //noinspection unchecked
         this.applyToView(
-            viewContext,
+                bindingContext,
             (ValueType) ValueInterpreter.getValue(
-                viewContext.getModel(),
-                viewContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue()
+                bindingContext.getModel(),
+                bindingContext.getViewAttributes().getValue(getNamespace(), attributeName).getRawValue()
             )
         );
     }
 
-    public abstract void applyToView(ViewContext<ViewType> viewContext, ValueType value);
+    public abstract void applyToView(BindingContext<ViewType> bindingContext, ValueType value);
 }

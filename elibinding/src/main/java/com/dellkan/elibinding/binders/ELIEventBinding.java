@@ -3,11 +3,8 @@ package com.dellkan.elibinding.binders;
 import android.view.View;
 
 import com.dellkan.elibinding.PresentationModel;
-import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.BindingContext;
 import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
-import com.dellkan.elibinding.modelparsers.ModelCallback;
-
-import java.lang.reflect.Method;
 
 /**
  * Used for event bindings, which is essentially when a method on
@@ -31,19 +28,19 @@ public abstract class ELIEventBinding<ViewType extends View> extends ELISingleBi
 
     /**
      * This is used to bind to your view appropriately.
-     * @param viewContext
+     * @param bindingContext
      * @param value
      */
     @Override
-    public abstract void setupView(ViewContext<ViewType> viewContext, ModelLinkedValueParser.LinkedMember value);
+    public abstract void setupView(BindingContext<ViewType> bindingContext, ModelLinkedValueParser.LinkedMember value);
 
     /**
      * applyToView isn't interesting in this context.
-     * @param viewContext
+     * @param bindingContext
      * @param value
      */
     @Override
-    public final void applyToView(ViewContext<ViewType> viewContext, ModelLinkedValueParser.LinkedMember value) {
+    public final void applyToView(BindingContext<ViewType> bindingContext, ModelLinkedValueParser.LinkedMember value) {
 
     }
 }

@@ -1,8 +1,10 @@
 package com.dellkan.elibinding.bindings.AdapterView;
 
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 
-import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.BindingContext;
 import com.dellkan.elibinding.binders.ELIMultiBinding;
 import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
 import com.dellkan.elibinding.util.ValueInterpreter;
@@ -16,24 +18,24 @@ public class AdapterViewBinding extends ELIMultiBinding<AdapterView> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setupView(ViewContext<AdapterView> viewContext) {
-        if (shouldTrigger(viewContext)) {
-            String listLayoutRawValue = viewContext.getViewAttributes().getValue(getNamespace(), "listLayout").getRawValue();
-            ModelLinkedValueParser.LinkedMember listItems = viewContext.getModelAttribute(
+    public void setupView(BindingContext<AdapterView> bindingContext) {
+        if (shouldTrigger(bindingContext)) {
+            String listLayoutRawValue = bindingContext.getViewAttributes().getValue(getNamespace(), "listLayout").getRawValue();
+            ModelLinkedValueParser.LinkedMember listItems = bindingContext.getModelAttribute(
                     getNamespace(),
                     "listItems"
             );
             try {
-                viewContext.getView().setAdapter(new ELIDataAdapter(
-                        viewContext,
+                bindingContext.getView().setAdapter(new ELIDataAdapter(
+                        bindingContext,
                         // Reference to model attribute holding the item collection
                         listItems,
                         // Reference to layoutRes attribute
                         (Integer) ValueInterpreter.findSuitableParser(
-                                viewContext.getModel(),
+                                bindingContext.getModel(),
                                 listLayoutRawValue
                         ).getValue(
-                                viewContext.getModel(),
+                                bindingContext.getModel(),
                                 listLayoutRawValue
                         )
                 ));
@@ -45,9 +47,12 @@ public class AdapterViewBinding extends ELIMultiBinding<AdapterView> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void applyToView(ViewContext<AdapterView> viewContext, String... changedAttributes) {
-        if (Arrays.asList(changedAttributes).contains("listItems")) {
-
+    public void applyToView(BindingContext<AdapterView> bindingContext, String... changedAttributes) {
+        if (changedAttributes.length == 0 || Arrays.asList(changedAttributes).contains(getNamespace() + ":listItems")) {
+            Adapter adapter = bindingContext.getView().getAdapter();
+            if (adapter instanceof BaseAdapter) {
+                ((BaseAdapter) adapter).notifyDataSetChanged();
+            }
         }
     }
 }

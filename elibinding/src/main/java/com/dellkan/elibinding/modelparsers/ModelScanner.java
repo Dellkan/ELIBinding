@@ -44,7 +44,9 @@ public class ModelScanner {
     private static String getAttributeName(String rawAttributeName) {
         for (String prefix : attributePrefixes) {
             if (rawAttributeName.startsWith(prefix)) {
-                return rawAttributeName.substring(prefix.length());
+                String attributeName = rawAttributeName.substring(prefix.length());
+                attributeName = attributeName.substring(0, 1).toLowerCase() + attributeName.substring(1);
+                return attributeName;
             }
         }
         return rawAttributeName;

@@ -30,6 +30,12 @@ public class ModelChangeHandler {
         listeners.get(model).add(listener);
     }
 
+    public static void removeListener(Object model, Listener listener) {
+        if (listeners.containsKey(model)) {
+            listeners.get(model).remove(listener);
+        }
+    }
+
     public static interface Listener {
         void onChange(Object model, String... modelFieldName);
     }

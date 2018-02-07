@@ -3,7 +3,6 @@ package com.dellkan.elibinding;
 import android.view.View;
 
 import com.dellkan.elibinding.binders.ELIBinding;
-import com.dellkan.elibinding.layoutparsers.ModelEventParser;
 import com.dellkan.elibinding.layoutparsers.ModelLinkedValueParser;
 import com.dellkan.elibinding.layoutparsers.ModelValueParser;
 import com.dellkan.elibinding.layoutparsers.ValueParser;
@@ -22,12 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * All of the parameters to the {@link ELIBinding#applyToView(ViewContext, String...)} were getting a bit of
+ * All of the parameters to the {@link ELIBinding#applyToView(BindingContext, String...)} were getting a bit of
  * a handful. This class here is nothing more than a glorified shortcut so we can provide the binding
  * with all of the cool data we have without having 20+ parameters
  * @param <ViewType>
  */
-public class ViewContext<ViewType extends View> {
+public class BindingContext<ViewType extends View> {
     private ELIContext eliContext;
     private View parent;
     private ViewType view;
@@ -36,7 +35,9 @@ public class ViewContext<ViewType extends View> {
     private ELIBinding<ViewType> binding;
     private Map<ViewAttribute, ModelAttribute> attributeMapping = new HashMap<>();
 
-    public ViewContext(ELIContext eliContext, View parent, ViewType view, ViewAttributes viewAttributes, PresentationModel model, ELIBinding<ViewType> binding) {
+    private Map<Object, ModelChangeHandler.Listener> modelListeners = new HashMap<>();
+
+    public BindingContext(ELIContext eliContext, View parent, ViewType view, ViewAttributes viewAttributes, PresentationModel model, ELIBinding<ViewType> binding) {
         this.eliContext = eliContext;
         this.parent = parent;
         this.view = view;
@@ -128,7 +129,7 @@ public class ViewContext<ViewType extends View> {
         if (binding.listenForModelChanges()) {
             // Setup the listener(s)
             for (Object subModel : models) {
-                ModelChangeHandler.registerListener(subModel, new ModelChangeHandler.Listener() {
+                ModelChangeHandler.Listener listener = new ModelChangeHandler.Listener() {
                     @Override
                     public void onChange(Object model, String... refreshedAttributes) {
                         ModelScanner.ModelScan modelScan = ModelScanner.getScan(model.getClass());
@@ -140,12 +141,29 @@ public class ViewContext<ViewType extends View> {
                                 }
                             }
                         }
-                        if ((refreshedAttributes.length == 0 || attributeNames.size() > 0) && binding.shouldTrigger(ViewContext.this, attributeNames.toArray(new String[]{}))) {
-                            binding.applyToView(ViewContext.this, attributeNames.toArray(new String[]{}));
+                        if ((refreshedAttributes.length == 0 || attributeNames.size() > 0) && binding.shouldTrigger(BindingContext.this, attributeNames.toArray(new String[]{}))) {
+                            binding.applyToView(BindingContext.this, attributeNames.toArray(new String[]{}));
                         }
                     }
-                });
+                };
+
+                ModelChangeHandler.registerListener(subModel, listener);
+                modelListeners.put(subModel, listener);
             }
         }
+    }
+
+    public void rebindWithNewModel(PresentationModel model) {
+        // Remove all old listeners
+        for (Map.Entry<Object, ModelChangeHandler.Listener> entry : modelListeners.entrySet()) {
+            ModelChangeHandler.removeListener(entry.getKey(), entry.getValue());
+        }
+        modelListeners.clear();
+
+        // Set new model
+        this.model = model;
+
+        // Setup again
+        this.bindView();
     }
 }

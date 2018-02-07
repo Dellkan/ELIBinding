@@ -6,7 +6,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.dellkan.elibinding.PresentationModel;
-import com.dellkan.elibinding.ViewContext;
+import com.dellkan.elibinding.BindingContext;
+import com.dellkan.elibinding.ViewBindings;
 import com.dellkan.enhanced_layout_inflater.ELIContext;
 import com.dellkan.enhanced_layout_inflater.ViewAttributes;
 import com.dellkan.enhanced_layout_inflater.ViewHook;
@@ -27,7 +28,7 @@ public abstract class ELIBinding<ViewType extends View> extends ViewHook<ViewTyp
 		PresentationModel model = (PresentationModel) eliContext.getData().get("ELIBindingModel");
 		ViewAttributes viewAttributes = new ViewAttributes(attrs);
 
-		ViewContext<ViewType> viewContext = new ViewContext<>(eliContext, parent, view, viewAttributes, model, this);
+		ViewBindings.addBinding(view, new BindingContext<>(eliContext, parent, view, viewAttributes, model, this));
 	}
 
 	public String getNamespace() {
@@ -40,12 +41,12 @@ public abstract class ELIBinding<ViewType extends View> extends ViewHook<ViewTyp
     /**
      * If this binding is listening for model changes, this hook checks if the change is
      * interesting or not
-     * @param viewContext Collection of data regarding this binding, model, and view
+     * @param bindingContext Collection of data regarding this binding, model, and view
      * @param changedAttributes The attributes on the model that changed
      * @return true if the change should be applied on this binding
      * @see #listenForModelChanges()
      */
-	public boolean shouldTrigger(ViewContext viewContext, String... changedAttributes) {
+	public boolean shouldTrigger(BindingContext bindingContext, String... changedAttributes) {
 		return true;
 	}
 
@@ -59,17 +60,17 @@ public abstract class ELIBinding<ViewType extends View> extends ViewHook<ViewTyp
 
     /**
      * Called once every view creation. Use this to initialize your view
-     * @param viewContext
+     * @param bindingContext
      */
-	public void setupView(ViewContext<ViewType> viewContext) {
-	    applyToView(viewContext);
+	public void setupView(BindingContext<ViewType> bindingContext) {
+	    applyToView(bindingContext);
     }
 
     /**
      * Called every time the relevant fields on your model changes.
-     * @param viewContext
-     * @see #shouldTrigger(ViewContext, String...)
+     * @param bindingContext
+     * @see #shouldTrigger(BindingContext, String...)
      * @see #listenForModelChanges()
      */
-	public abstract void applyToView(ViewContext<ViewType> viewContext, String... changedAttributes);
+	public abstract void applyToView(BindingContext<ViewType> bindingContext, String... changedAttributes);
 }
